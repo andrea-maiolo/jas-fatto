@@ -1,14 +1,12 @@
-import React, { useState, useEffect } from "react";
-import ProductList from "./Components/ProductList";
-import ProductDetails from "./Components/ProductDetails";
-import Cart from "./Components/Cart";
-import { auth } from "./Firebase";
+import React, { useEffect, useState } from "react";
+import { auth } from "../Firebase";
 import { useAuthState } from "react-firebase-hooks/auth";
 import firebase from "firebase/compat/app";
 import { GoSignOut } from "react-icons/go";
 
-function App() {
+const GoogleLogin = () => {
   const [user] = useAuthState(auth);
+
   const [userID, setUserID] = useState("");
 
   useEffect(() => {
@@ -21,40 +19,34 @@ function App() {
   console.log(user);
 
   return (
-    <div className="App">
-      <h1>Jas fatto</h1>
-      <div>
-        {user ? (
-          <div>
-            <SignOut />
-          </div>
-        ) : (
-          <Login />
-        )}
-      </div>
-      <ProductList />
-      {/* <ProductDetails /> */}
-      {/* <Cart /> */}
+    <div>
+      {user ? (
+        <div>
+          <SignOut />
+          <p>User ID: {userID}</p>
+        </div>
+      ) : (
+        <Login />
+      )}
     </div>
   );
-}
+};
 
 const Login = () => {
-  const [err, setErr] = useState("");
-
+  const [error, setError] = useState("");
   const handleLogin = async () => {
     try {
       const provider = new firebase.auth.GoogleAuthProvider();
       const userCredential = await firebase.auth().signInWithPopup(provider);
     } catch (error) {
-      setErr(error);
+      setError(error);
     }
   };
 
-  if (err) {
+  if (error) {
     return (
       <div>
-        <p>an error occurred</p>
+        <p>an error occured</p>
       </div>
     );
   }
@@ -67,17 +59,14 @@ const Login = () => {
 };
 
 function SignOut() {
-  console.log(auth);
   return (
     auth.currentUser && (
       <div>
-        <button className="google-sign-out" onClick={() => auth.signOut()}>
-          Sign out
-        </button>
-        <GoSignOut onClick={() => auth.signOut()} />
+        <button>sign out</button>
+        <GoSignOut />
       </div>
     )
   );
 }
 
-export default App;
+export default GoogleLogin;
